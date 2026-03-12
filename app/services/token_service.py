@@ -15,7 +15,7 @@ class TokenService:
     def create_access_token(self, user_id: int) -> str:
         expire = datetime.now(timezone.utc) + timedelta(minutes=JWT_EXPIRE_MINUTES)
 
-return jwt.encode({"sub": str(user_id), "exp": expire}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        return jwt.encode({"sub": str(user_id), "exp": expire}, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     def decode_access_token(self, token: str) -> int | None:
         try:
