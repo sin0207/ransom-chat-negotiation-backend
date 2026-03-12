@@ -3,12 +3,12 @@ from datetime import datetime, timedelta, timezone
 from tests.conftest import get_token_for
 
 def login(client, email="test@test.com", password="test123"):
-    resp = client.post("/auth/login", json={"email": email, "password": password})
+    resp = client.post("/auth/login", data={"email": email, "password": password})
 
     return resp
 
 def test_login_unknown_email(client):
-    response = client.post("/auth/login", json={"email": "nobody@test.com", "password": "whatever"})
+    response = client.post("/auth/login", data={"email": "nobody@test.com", "password": "whatever"})
 
     assert response.status_code == 400
     assert response.json() == {"error": {"message": "Invalid credential."}}
@@ -25,7 +25,7 @@ def test_login_valid_credentials(client, test_user):
     assert isinstance(data["refresh_token"], str) and len(data["refresh_token"]) > 0
 
 def test_login_wrong_password(client, test_user):
-    response = client.post("/auth/login", json={"email": "test@test.com", "password": "wrongpass"})
+    response = client.post("/auth/login", data={"email": "test@test.com", "password": "wrongpass"})
     
     assert response.status_code == 400
     assert response.json() == {"error": {"message": "Invalid credential."}}

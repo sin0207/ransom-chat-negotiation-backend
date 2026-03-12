@@ -64,5 +64,5 @@ def admin_user(db_session):
 
 
 def get_token_for(client, email: str, password: str = "test123") -> str:
-    resp = client.post("/auth/login", json={"email": email, "password": password})
+    resp = client.post("/auth/login", data={"email": email, "password": password})
     return resp.json()["access_token"]

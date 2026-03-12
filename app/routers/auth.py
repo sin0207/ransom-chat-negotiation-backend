@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Form, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -15,17 +15,13 @@ INVALID_CREDENTIAL_RESPONSE = JSONResponse(
     content={"error": {"message": "Invalid credential."}},
 )
 
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-class RefreshRequest(BaseModel):
-    refresh_token: str
-
-
 @router.post("/login")
-async def login(body: LoginRequest, auth_service: Annotated[AuthService, Depends(AuthService)]):
-    result = auth_service.login(body.email, body.password)
+async def login(
+    email: Annotated[str, Form()],
+    password: Annotated[str, Form()],
+    auth_service: Annotated[AuthService, Depends(AuthService)],
+):
+    result = auth_service.login(email, password)
 
     if result is None:
         return INVALID_CREDENTIAL_RESPONSE
@@ -33,6 +29,9 @@ async def login(body: LoginRequest, auth_service: Annotated[AuthService, Depends
     access_token, refresh_token = result
     
     return {"access_token": access_token, "refresh_token": refresh_token}
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
 
 @router.post("/refresh")
 async def refresh(body: RefreshRequest, token_service: Annotated[TokenService, Depends(TokenService)]):

@@ -10,5 +10,7 @@ COPY . /app
 WORKDIR /app
 RUN uv sync --locked --no-cache
 
-# Run the application.
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["/app/.venv/bin/fastapi", "run", "app/main.py", "--port", "80"]
