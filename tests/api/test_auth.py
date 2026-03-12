@@ -60,18 +60,20 @@ def test_refresh_expired_token_returns_401(client, test_user, db_session):
     assert response.status_code == 401
 
 def test_logout_revokes_refresh_token(client, test_user):
-    refresh_token = login(client).json()["refresh_token"]
-    
-    response = client.post("/auth/logout", json={"refresh_token": refresh_token})
-    
+    data = login(client).json()
+    access_token = data["access_token"]
+    refresh_token = data["refresh_token"]
+
+    response = client.post("/auth/logout", headers={"Authorization": f"Bearer {access_token}"})
+
     assert response.status_code == 200
     assert response.json() == {}
-    
+
     response = client.post("/auth/refresh", json={"refresh_token": refresh_token})
     assert response.status_code == 401
 
 
-def test_logout_with_unknown_token_still_returns_200(client):
-    response = client.post("/auth/logout", json={"refresh_token": "unknown-token"})
-    
-    assert response.status_code == 200
+def test_logout_with_invalid_token_returns_401(client):
+    response = client.post("/auth/logout", headers={"Authorization": "Bearer invalid-token"})
+
+    assert response.status_code == 401

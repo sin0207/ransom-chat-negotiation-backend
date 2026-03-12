@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
-router = APIRouter()
+from ..dependencies import require_admin
 
+router = APIRouter()
 
 @router.post("/")
 async def update_admin():
